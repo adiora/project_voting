@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Ideas</title>
+    <link rel="stylesheet" href="../css/voting.css">
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar" id="topBar">
+            <button class="submit-btn" id="submitBtn">Submit</button>
+            <h1 class="main-heading">Choose Your Top 3 Project Ideas</h1>
+            <div class="timer">
+                <h3 id="timer">Time: 10:00</h3>
+            </div>
+        </div>
+
+        <div class="projects-container" id="projectCards"></div>
+
+        <!-- Error message dialog -->
+        <div id="submitMessage" class="dialog" style="display: none;">
+            <p>You have 1 min remaining until auto-submit.</p>
+            <button id="closeSubmitMessageBtn">Close</button>
+        </div>
+
+        <!-- Submit message dialog -->
+        <div id="errorMessage" class="dialog" style="display: none;">
+            <p>Please select three projects before submitting your vote.</p>
+            <button id="closeErrorBtn">Close</button>
+        </div>
+    
+        <!-- Submit confirmation dialog -->
+        <div id="confirmationDialog" class="confirmation-message" style="display: none;">
+            <p>Are you sure you want to submit your vote?</p>
+            <button id="closeConfirmationBtn">No</button>
+            <button id="confirmSubmitBtn">Yes</button>
+        </div>
+    </div>
+
+    <script type="module" src="../js/voting.js"></script>
+</body>
+</html>

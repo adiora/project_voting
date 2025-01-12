@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js';
+        import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAJfrreyoM9E4o8MNJ5kpP5OSmLmoO5JCI",
+            authDomain: "project-ideas-ce66a.firebaseapp.com",
+            projectId: "project-ideas-ce66a",
+            storageBucket: "project-ideas-ce66a.firebasestorage.app",
+            messagingSenderId: "508031794242",
+            appId: "1:508031794242:web:ab31a43b4644f45c6401db",
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Fetch results from Firestore
+        async function fetchResults() {
+            const resultsSnapshot = await getDocs(collection(db, "result"));
+            const results = [];
+
+            resultsSnapshot.forEach(doc => {
+                results.push(doc.data());
+            });
+
+            return results;
+        }
+
+        // Function to display the results in a chart
+        async function displayResults() {
+            const results = await fetchResults();
+
+            if (results.length === 0) {
+                document.getElementById("chartContainer").innerHTML = "<p>No results available.</p>";
+                return;
+            }
+
+            // Sort projects by points (highest first)
+            results.sort((a, b) => b.points - a.points);
+
+            // Extract labels and data for chart
+            const labels = results.map(r => r.projectName);
+            const data = results.map(r => r.points);
+
+            // Highlight top 3 projects with different colors
+            const backgroundColors = data.map((_, index) => 
+                index < 3 ? "rgba(255, 99, 132, 0.8)" : "rgba(54, 162, 235, 0.6)"
+            );
+
+            // Create Chart
+            const ctx = document.getElementById("resultsChart").getContext("2d");
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Points",
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderColor: "rgba(0, 0, 0, 0.3)",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stepSize: 1
+                        }
+                    }
+                }
+            });
+        }
+
+        // Run displayResults() when the page loads
+        window.onload = displayResults;
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .chart-container {
+            width: 80%;
+            max-width: 800px;
+            height: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Project Voting Results</h1>
+    <div class="chart-container">
+        <canvas id="resultsChart"></canvas>
+    </div>
+
+</body>
+</html>
