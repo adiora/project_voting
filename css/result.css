@@ -1,0 +1,109 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background: #f4f7fb;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+
+h1 {
+    text-align: center;
+    color: #27ae60; /* Same green as login page */
+    font-size: 2rem;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+/* Content Layout */
+.content-container {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 20px;
+}
+
+.chart-container {
+    width: 45%; /* Slightly smaller bar chart */
+    height: 450px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.results-section {
+    width: 30%; /* Thinner right section */
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    height: 450px;
+    overflow-y: auto;
+}
+
+.results-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.results-section th, .results-section td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold; /* Make table entries bold */
+}
+
+.results-section th {
+    background-color: #27ae60; /* Same green as heading */
+    color: white;
+}
+
+.results-section td {
+    color: #7f8c8d;
+}
+
+.results-section td span {
+    color: #34495e;
+}
+
+/* Chart Styles */
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .content-container {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .chart-container, .results-section {
+        width: 90%;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .results-section th, .results-section td {
+        font-size: 0.9rem;
+    }
+}

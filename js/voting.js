@@ -9,8 +9,13 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
+
 function sendToLoginPage() {
     window.location.href = "login.html";
+}
+
+function showThankYouPage() {
+    window.location.href = "thankyou.html";
 }
 
 // ✅ Check if the user has already voted
@@ -31,7 +36,7 @@ function checkIfVoted(userId) {
 const projects = [];
 
 let selectedVotes = { first: null, second: null, third: null };
-let voteTimer = 10 * 1; // 10 minutes in seconds
+let voteTimer = 10 * 60; // 10 minutes in seconds
 let timerInterval;
 let warningShown = false;
 
@@ -162,11 +167,6 @@ function submitVote() {
             showThankYouPage();
         }).catch(err => console.error("Error submitting vote:", err));
     });
-}
-
-// ✅ Show Thank You Page & Hide Voting Options
-function showThankYouPage() {
-    window.location.href = "thankyou.html";
 }
 
 // ✅ Show Error Message

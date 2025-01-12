@@ -1,4 +1,4 @@
-import { auth, db, GoogleAuthProvider, signInWithPopup, collection, getDocs, query, where } from '../firebase/firebase.js';
+import { auth, db, GoogleAuthProvider, signInWithPopup, collection, getDocs, query, where, doc, getDoc } from '../firebase/firebase.js';
 
 document.getElementById('login-btn').addEventListener('click', async () => {
     const provider = new GoogleAuthProvider();
@@ -14,8 +14,20 @@ document.getElementById('login-btn').addEventListener('click', async () => {
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-            // Email is registered, allow login
-            window.location.href = "../pages/voting.html";
+            // Email is registered, check if voting is processed
+            const settingsRef = doc(db, 'settings', 'general'); // Assuming 'general' is the document
+            const settingsSnapshot = await getDoc(settingsRef);
+
+            if (settingsSnapshot.exists()) {
+                const voteProcessed = settingsSnapshot.data().votesProcessed;
+                if (voteProcessed) {
+                    window.location.href = "../pages/result.html";
+                } else {
+                        window.location.href = "../pages/voting.html";
+                }
+            } else {
+                console.error("Settings not found");
+            }
         } else {
             // Email is not registered, sign the user out
             alert("Access denied: Your email is not pre-registered.");

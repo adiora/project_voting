@@ -1,59 +1,129 @@
-import { db, collection, getDocs } from "firebase/firestore";
+import { db, collection, getDocs } from '../firebase/firebase.js';
 
-// Display results on the webpage with a bar chart
-async function displayResults() {
-    try {
-        const resultSnapshot = await getDocs(collection(db, "result"));
+// Fetch results from Firestore
+async function fetchResults() {
+    const resultsSnapshot = await getDocs(collection(db, "result"));
+    const results = [];
 
-        // Create an array of results to sort
-        const results = [];
-        resultSnapshot.forEach(doc => {
-            const data = doc.data();
-            results.push({
-                projectId: doc.id,
-                points: data.points
-            });
-        });
+    resultsSnapshot.forEach(doc => {
+        results.push(doc.data());
+    });
 
-        // Sort projects by points (descending order)
-        results.sort((a, b) => b.points - a.points);
-
-        // Get the top 3 projects
-        const topProjects = results.slice(0, 3);
-
-        // Prepare data for Chart.js
-        const projectNames = topProjects.map(project => project.projectId);
-        const projectPoints = topProjects.map(project => project.points);
-
-        // Get the canvas context to render the chart
-        const ctx = document.getElementById("resultsChart").getContext("2d");
-
-        // Create the bar chart using Chart.js
-        new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: projectNames,  // Project names (X-axis)
-                datasets: [{
-                    label: "Project Points",
-                    data: projectPoints,  // Points for each project (Y-axis)
-                    backgroundColor: "rgba(75, 192, 192, 0.6)",  // Bar color
-                    borderColor: "rgba(75, 192, 192, 1)",
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-    } catch (error) {
-        console.error("Error displaying results:", error);
-    }
+    return results;
 }
 
-// Call this function to display results when the page is loaded
-document.addEventListener("DOMContentLoaded", displayResults);
+// Fetch all projects from Firestore (used to get projects with 0 points)
+async function fetchProjects() {
+    const projectsSnapshot = await getDocs(collection(db, "projects"));
+    const projects = [];
+
+    projectsSnapshot.forEach(doc => {
+        const projectData = doc.data();
+        projects.push({
+            projectId: doc.id,
+            projectName: projectData.name
+        });
+    });
+
+    return projects;
+}
+
+// Function to display the results in a chart
+async function displayResults() {
+    const results = await fetchResults();
+    const projects = await fetchProjects();
+
+    if (results.length === 0) {
+        document.getElementById("chartContainer").innerHTML = "<p>No results available.</p>";
+        return;
+    }
+
+    // Combine results and projects to get all projects (including those with 0 points)
+    const allProjects = projects.map(project => {
+        const result = results.find(r => r.projectName === project.projectName);
+        return {
+            projectName: project.projectName,
+            points: result ? result.points : 0
+        };
+    });
+
+    // Sort projects by points in descending order
+    allProjects.sort((a, b) => b.points - a.points);
+
+    // Extract top 5 projects for the bar chart
+    const topProjects = allProjects.slice(0, 5);
+
+    // Extract labels and data for the chart
+    const labels = topProjects.map(r => r.projectName);
+    const data = topProjects.map(r => r.points);
+
+    // Highlight top 3 projects with different colors
+    const backgroundColors = data.map((_, index) =>
+        index < 3 ? "rgba(255, 99, 132, 0.8)" : "rgba(54, 162, 235, 0.6)"
+    );
+
+    // Create Chart
+    const ctx = document.getElementById("resultsChart").getContext("2d");
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Points",
+                data: data,
+                backgroundColor: backgroundColors,
+                borderColor: "rgba(0, 0, 0, 0.3)",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    stepSize: 1
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: {
+                            family: 'Arial, sans-serif',
+                            weight: 'bold'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff'
+                }
+            }
+        }
+    });
+
+    // Generate table for the remaining results
+    const table = document.getElementById("resultsList");
+    const tbody = document.createElement("tbody");
+
+    allProjects.slice(5).forEach(result => {
+        const row = document.createElement("tr");
+
+        const projectNameCell = document.createElement("td");
+        projectNameCell.textContent = result.projectName;
+
+        const pointsCell = document.createElement("td");
+        pointsCell.textContent = result.points;
+
+        row.appendChild(projectNameCell);
+        row.appendChild(pointsCell);
+        tbody.appendChild(row);
+    });
+
+    table.appendChild(tbody);
+}
+
+// Run displayResults() when the page loads
+window.onload = displayResults;
