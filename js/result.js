@@ -1,5 +1,15 @@
 import { db, collection, getDocs } from '../firebase/firebase.js';
 
+// Show the loading indicator
+function showLoading() {
+    document.getElementById("loadingIndicator").style.display = "flex";
+}
+
+// Hide the loading indicator
+function hideLoading() {
+    document.getElementById("loadingIndicator").style.display = "none";
+}
+
 // Fetch results from Firestore
 async function fetchResults() {
     const resultsSnapshot = await getDocs(collection(db, "result"));
@@ -30,8 +40,13 @@ async function fetchProjects() {
 
 // Function to display the results in a chart
 async function displayResults() {
+    showLoading();  // Show loading indicator
+
     const results = await fetchResults();
     const projects = await fetchProjects();
+
+    // Hide loading indicator after data is loaded
+    hideLoading();
 
     if (results.length === 0) {
         document.getElementById("chartContainer").innerHTML = "<p>No results available.</p>";
@@ -99,7 +114,6 @@ async function displayResults() {
             }
         }
     });
-
 
     // Generate table for the remaining results
     const table = document.getElementById("resultsList");

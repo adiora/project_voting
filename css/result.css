@@ -18,6 +18,7 @@ h1 {
     font-size: 2rem;
     margin: 20px 0;
     font-weight: bold;
+    padding: 10px;
 }
 
 /* Content Layout */
@@ -33,7 +34,7 @@ h1 {
 
 /* Chart Container */
 .chart-container {
-    width: 50%; 
+    width: 50%;
     height: 450px;
     background: white;
     padding: 20px;
@@ -46,7 +47,7 @@ h1 {
 
 /* Results Section */
 .results-section {
-    width: 35%; 
+    width: 35%;
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -139,4 +140,21 @@ canvas {
         font-size: 12px;
         padding: 8px;
     }
+}
+
+/* Loading Indicator Styles */
+.loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    z-index: 9999;
+    font-weight: bold;
 }

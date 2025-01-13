@@ -11,38 +11,63 @@ body {
 
 .container {
     width: 80%;
-    max-width: 600px; /* You can adjust this as needed */
+    max-width: 500px; /* Slightly reduce the width for better visuals */
     background-color: white;
-    padding: 20px;
+    padding: 30px 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
+    margin: 20px;
 }
 
 .main-heading {
     color: #4CAF50;
     font-size: 2rem;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    font-weight: bold;
 }
 
 .message {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .logout-btn {
     background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 8px 16px;
-    font-size: 1rem;
+    padding: 10px 20px;
+    font-size: 1.1rem;
     font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    width: 100%;
+    max-width: 200px; /* Center the button nicely */
+    margin: 0 auto;
 }
 
 .logout-btn:hover {
     background-color: #45a049;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        max-width: none; /* Remove max-width for more flexibility */
+    }
+
+    .main-heading {
+        font-size: 1.6rem;
+    }
+
+    .message {
+        font-size: 1rem;
+    }
+
+    .logout-btn {
+        font-size: 1rem;
+    }
 }
