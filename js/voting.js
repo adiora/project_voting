@@ -9,7 +9,6 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-
 function sendToLoginPage() {
     window.location.href = "login.html";
 }
