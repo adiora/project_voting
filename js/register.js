@@ -1,4 +1,4 @@
-import { auth, db, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, doc, setDoc, getDoc } from "../firebase/firebase.js";
+import { auth, db, collection, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, doc, addDoc, getDoc } from "../firebase/firebase.js";
 
 const loginBtn = document.getElementById("loginBtn");
 const emailInput = document.getElementById("email");
