@@ -149,6 +149,7 @@ function confirmSubmit() {
 }
 
 // ✅ Submit Vote & Store User ID to Prevent Duplicate Votes
+// ✅ Submit Vote & Store User ID to Prevent Duplicate Votes
 function submitVote() {
     auth.onAuthStateChanged((user) => {
         if (!user) {
@@ -156,15 +157,27 @@ function submitVote() {
             return; // No user logged in
         }
 
-        // Store vote along with user ID
-        addDoc(collection(db, "votes"), {
-            userId: user.uid,  // Store unique user ID
-            first: selectedVotes.first,
-            second: selectedVotes.second,
-            third: selectedVotes.third
-        }).then(() => {
-            showThankYouPage();
-        }).catch(err => console.error("Error submitting vote:", err));
+        // Check if the user has already voted
+        const votesRef = collection(db, "votes");
+        const q = query(votesRef, where("userId", "==", user.uid)); 
+
+        getDocs(q).then(snapshot => {
+            if (!snapshot.empty) {
+                // User has already voted, show a message or redirect
+                showThankYouPage();
+                return; // Prevent vote submission if already voted
+            } else {
+                // Store vote along with user ID if not voted
+                addDoc(collection(db, "votes"), {
+                    userId: user.uid,  // Store unique user ID
+                    first: selectedVotes.first,
+                    second: selectedVotes.second,
+                    third: selectedVotes.third
+                }).then(() => {
+                    showThankYouPage();
+                }).catch(err => console.error("Error submitting vote:", err));
+            }
+        }).catch(err => console.error("Error checking user vote:", err));
     });
 }
 
