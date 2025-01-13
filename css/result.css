@@ -8,7 +8,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     flex-direction: column;
 }
 
@@ -31,17 +31,22 @@ h1 {
     margin: 0 20px;
 }
 
+/* Chart Container */
 .chart-container {
-    width: 45%; /* Slightly smaller bar chart */
+    width: 50%; 
     height: 450px;
     background: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+/* Results Section */
 .results-section {
-    width: 30%; /* Thinner right section */
+    width: 35%; 
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -50,29 +55,34 @@ h1 {
     overflow-y: auto;
 }
 
+/* Table */
 .results-section table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.results-section th, .results-section td {
-    padding: 10px;
+.results-section th, 
+.results-section td {
+    padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
-    font-weight: bold; /* Make table entries bold */
+    font-weight: bold;
 }
 
 .results-section th {
-    background-color: #27ae60; /* Same green as heading */
+    background-color: #27ae60;
     color: white;
 }
 
 .results-section td {
     color: #7f8c8d;
+    word-wrap: break-word;
 }
 
-.results-section td span {
-    color: #34495e;
+/* Make table scrollable */
+.results-section {
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 /* Chart Styles */
@@ -82,28 +92,51 @@ canvas {
 }
 
 /* Responsive Styles */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .content-container {
         flex-direction: column;
         gap: 20px;
         align-items: center;
     }
 
-    .chart-container, .results-section {
+    .chart-container, 
+    .results-section {
         width: 90%;
-    }
-
-    h1 {
-        font-size: 1.8rem;
+        height: auto;
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .chart-container {
+        width: 100%;
+        height: 350px;
+        padding: 15px;
+    }
+
+    .results-section {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .results-section th, 
+    .results-section td {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 400px) {
     h1 {
         font-size: 1.5rem;
     }
 
-    .results-section th, .results-section td {
-        font-size: 0.9rem;
+    .results-section th, 
+    .results-section td {
+        font-size: 12px;
+        padding: 8px;
     }
 }

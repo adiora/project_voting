@@ -1,35 +1,45 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js';
-import { getFirestore, collection, getDoc, getDocs, addDoc, writeBatch, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
+import { db, collection, getDoc, getDocs, writeBatch, doc, updateDoc } from "../firebase/firebase.js";
 
-// Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyAJfrreyoM9E4o8MNJ5kpP5OSmLmoO5JCI",
-    authDomain: "project-ideas-ce66a.firebaseapp.com",
-    projectId: "project-ideas-ce66a",
-    storageBucket: "project-ideas-ce66a.firebasestorage.app",
-    messagingSenderId: "508031794242",
-    appId: "1:508031794242:web:ab31a43b4644f45c6401db",
-};
+async function clearResults() {
+    try {
+        console.log("Clearing previous results...");
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+        const resultCollection = collection(db, "result");
+        const resultsSnapshot = await getDocs(resultCollection);
+
+        if (resultsSnapshot.empty) {
+            console.log("No previous results to clear.");
+            return;
+        }
+
+        const batch = writeBatch(db);
+
+        resultsSnapshot.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+
+        await batch.commit();
+        console.log("Previous results cleared successfully.");
+    } catch (error) {
+        console.error("Error clearing previous results:", error);
+    }
+}
 
 async function calculateAndStoreResults() {
     try {
+        await clearResults(); // First, clear all previous results
+
         console.log("Processing votes...");
 
         const projectsSnapshot = await getDocs(collection(db, "projects"));
         const projects = [];
         projectsSnapshot.forEach(doc => {
             const projectData = doc.data();
-            projects.push({
-                projectId: doc.id,
-                projectName: projectData.name
-            });
+            projects.push(projectData.name); // Only store projectName
         });
 
         const projectPoints = {};
+
         const votesSnapshot = await getDocs(collection(db, "votes"));
 
         votesSnapshot.forEach(doc => {
@@ -41,20 +51,22 @@ async function calculateAndStoreResults() {
             if (third) projectPoints[third] = (projectPoints[third] || 0) + 1;
         });
 
-        for (const projectId in projectPoints) {
-            if (projectPoints.hasOwnProperty(projectId)) {
-                const project = projects.find(proj => proj.projectId === projectId);
-                if (project) {
-                    console.log(`${project.projectName}: ${projectPoints[projectId]} points`);
-                    await addDoc(collection(db, "result"), {
-                        projectId: project.projectId,
-                        projectName: project.projectName,
-                        points: projectPoints[projectId]
+        const batch = writeBatch(db);
+        const resultCollection = collection(db, "result");
+
+        for (const projectName in projectPoints) {
+            if (projectPoints.hasOwnProperty(projectName)) {
+                if (projects.includes(projectName)) { // Ensure project exists
+                    console.log(`${projectName}: ${projectPoints[projectName]} points`);
+                    batch.set(doc(resultCollection), {
+                        projectName: projectName,
+                        points: projectPoints[projectName]
                     });
                 }
             }
         }
 
+        await batch.commit();
         showStatusMessage("Results have been successfully stored!", "success");
 
     } catch (error) {
@@ -63,9 +75,10 @@ async function calculateAndStoreResults() {
     }
 }
 
+
 async function toggleVotesProcessedStatus() {
     try {
-        const settingsRef = doc(db, 'settings', 'general'); // Assuming 'general' is the document
+        const settingsRef = doc(db, "settings", "general"); // Assuming 'general' is the document
         const settingsSnapshot = await getDoc(settingsRef);
 
         if (!settingsSnapshot.exists()) {
@@ -87,23 +100,25 @@ async function toggleVotesProcessedStatus() {
 }
 
 function showStatusMessage(message, type) {
-    const statusMessageDiv = document.getElementById('statusMessage');
-    statusMessageDiv.textContent = message;
-    statusMessageDiv.classList.remove("success", "error");
-    statusMessageDiv.classList.add(type);
-    statusMessageDiv.style.display = "block";
+    const statusMessageDiv = document.getElementById("statusMessage");
+    if (statusMessageDiv) {
+        statusMessageDiv.textContent = message;
+        statusMessageDiv.classList.remove("success", "error");
+        statusMessageDiv.classList.add(type);
+        statusMessageDiv.style.display = "block";
+    }
 }
 
 // Wait for DOM content to load before attaching event listeners
-window.addEventListener('DOMContentLoaded', () => {
-    const calculateBtn = document.getElementById('calculateBtn');
-    const toggleVotesProcessedBtn = document.getElementById('toggleVotesProcessed');
+window.addEventListener("DOMContentLoaded", () => {
+    const calculateBtn = document.getElementById("calculateBtn");
+    const toggleVotesProcessedBtn = document.getElementById("toggleVotesProcessed");
 
-    calculateBtn.addEventListener('click', () => {
-        calculateAndStoreResults();
-    });
+    if (calculateBtn) {
+        calculateBtn.addEventListener("click", calculateAndStoreResults);
+    }
 
-    toggleVotesProcessedBtn.addEventListener('click', () => {
-        toggleVotesProcessedStatus();
-    });
+    if (toggleVotesProcessedBtn) {
+        toggleVotesProcessedBtn.addEventListener("click", toggleVotesProcessedStatus);
+    }
 });

@@ -64,6 +64,7 @@ async function displayResults() {
 
     // Create Chart
     const ctx = document.getElementById("resultsChart").getContext("2d");
+
     new Chart(ctx, {
         type: "bar",
         data: {
@@ -78,7 +79,7 @@ async function displayResults() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: false, // Allow the chart to resize
             scales: {
                 y: {
                     beginAtZero: true,
@@ -87,22 +88,18 @@ async function displayResults() {
             },
             plugins: {
                 legend: {
-                    position: 'top',
+                    position: "top",
                     labels: {
                         font: {
-                            family: 'Arial, sans-serif',
-                            weight: 'bold'
+                            family: "Arial, sans-serif",
+                            weight: "bold"
                         }
                     }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    titleColor: '#fff',
-                    bodyColor: '#fff'
                 }
             }
         }
     });
+
 
     // Generate table for the remaining results
     const table = document.getElementById("resultsList");
